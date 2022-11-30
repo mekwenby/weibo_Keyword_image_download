@@ -19,7 +19,7 @@ class Counter():  # 下载计数
         self.retry = 0
         self.existence = 0
 
-    def add_doog(self):
+    def add_good(self):
         self.good += 1
 
     def add_retry(self):
@@ -52,7 +52,7 @@ def download(url, key_path,path = 'Download'):  # 执行下载的函数
     if not os.path.exists(os.path.join(path, file_name)):  # 判断文件是否存在，不存在就下载
         try:
             wget.download(url=new_i4, out=os.path.join(path, file_name))
-            counter.add()
+            counter.add_good()
 
         except:
             print('失败', new_i4)
