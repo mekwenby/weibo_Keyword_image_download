@@ -8,7 +8,7 @@ Master.logo_Slabt('Running')
 key_list = Master.read_file('keyword_list.txt').split('\n')
 
 k = Keyword()
-k.start_date = '2022-10-31'
+k.start_date = '2021-1-1'
 for key in key_list:
     k.main(k.build_tasks(key))
 

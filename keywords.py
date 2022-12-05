@@ -2,7 +2,7 @@ import datetime
 import os
 import sys
 import time
-
+from threading import Thread
 import wget
 from lxml import etree
 from selenium import webdriver
@@ -19,7 +19,7 @@ class Counter():  # 下载计数
         self.retry = 0
         self.existence = 0
 
-    def add_good(self):
+    def add_doog(self):
         self.good += 1
 
     def add_retry(self):
@@ -33,6 +33,39 @@ class Counter():  # 下载计数
 
 
 counter = Counter()
+
+class Dowload(Thread):
+    def __init__(self,url,key_path,path = 'Download'):
+        super().__init__()
+        self.url = url
+        self.key_path = key_path
+        self.path = path
+
+    def run(self):
+        path = os.path.join(self.path, self.key_path)
+
+        new_i2 = self.url.replace('thumb150', 'large')
+
+        new_i3 = new_i2.replace('orj360', 'large')
+        new_i4 = new_i3.replace('https://wx', 'https://ww')
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        # 获取文件名
+        file_name = wget.filename_from_url(new_i4)
+        print('开始下载', file_name)
+        if not os.path.exists(os.path.join(path, file_name)):  # 判断文件是否存在，不存在就下载
+            try:
+                wget.download(url=new_i4, out=os.path.join(path, file_name))
+                counter.add_doog()
+
+            except:
+                print('失败', new_i4)
+                counter.add_retry()
+        else:
+            print('已存在', file_name)
+            counter.add_existence()
+        print(counter)
 
 
 def download(url, key_path,path = 'Download'):  # 执行下载的函数
@@ -52,7 +85,7 @@ def download(url, key_path,path = 'Download'):  # 执行下载的函数
     if not os.path.exists(os.path.join(path, file_name)):  # 判断文件是否存在，不存在就下载
         try:
             wget.download(url=new_i4, out=os.path.join(path, file_name))
-            counter.add_good()
+            counter.add_doog()
 
         except:
             print('失败', new_i4)
@@ -129,8 +162,9 @@ class Keyword():
                 # print(pic.xpath('./@action-data'))
                 pics = pic.xpath('./img/@src')
                 if len(pics) > 0:  # 判断是否为空列表
-                    download(url=pics[0],key_path=self.key)  # 开始下载
-
+                    #download(url=pics[0],key_path=self.key)  # 开始下载
+                    d = Dowload(pics[0],key_path=self.key)
+                    d.run()
                 li_tag = etree.tostring(pic, encoding='utf-8').decode()
                 # print(li_tag)
 
